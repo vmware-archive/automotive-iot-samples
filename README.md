@@ -44,6 +44,8 @@ python app.py
 ### Make a POST request
 
 1. Once the endpoint is running, you can make a POST request from the command line using `curl`:
+
 ```
 curl -d '{"message":"Hello World!"}' -H "Content-Type: application/json" -X POST http://localhost:2000/post_example
 ```
+
