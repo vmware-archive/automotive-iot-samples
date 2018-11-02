@@ -1,6 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
 from flask import request
+from flask import json
+from IoT_cloud_API_endpoint.db import write_event, read_last_event
+
 
 # Initiating the flask app
 app = Flask(__name__)
@@ -9,21 +12,43 @@ CORS(app)
 
 
 
-@app.route('/post_example', methods=['POST'])
-def post_example():
+@app.route('/add_event', methods=['POST'])
+def add_event():
     """
-    Sample post request route.
+    Recieve the data to write to the DB
     """
     # data sent through the post request 
-    req_data = request.get_json()
+    event_data = request.get_json()
 
-    # Getting the value for the message field
-    message = req_data["message"]
+    # Write to DB
+    write_event(event_data)
 
-    # Return message
-    return "Someone said: " + str(message) + "\n"
-
+    return "Called /post_example \n"
 
 
-if __name__ == '__main__':
-    app.run(debug=True, port=2000) #run app in debug mode on port 2000
+@app.route('/get_last_event', methods=['GET'])
+def get_last_event():
+    """
+    retrieve the last event (max timestamp)
+    and returns json containing values.
+    """
+    # get last event (in terms of timestamp)
+    row = read_last_event()
+    res_data = {
+        "client_side_id": row[0][0],
+        "user": row[0][1],
+        "event_type": row[0][2],
+        "event_timestamp": row[0][3],
+        "gps_coord": row[0][4]
+    }
+
+    response = app.response_class(
+		response=json.dumps(res_data),
+		status=200,
+		mimetype='application/json'
+		)
+    
+    return response
+
+
+
