@@ -1,0 +1,4 @@
+obd
+serial
+requests
+configparser

@@ -1,0 +1,40 @@
+
+[COMMON]
+DEBUG : True
+
+[DEVICE]
+Driver: Alex Courouble
+DriverID: AC007
+## TODO perhaps read from OBD
+VehicleID: BMW1234
+
+
+[EDGE]
+# how frequency we read from the obd sensors
+SAMPLE_FREQUENCY : 0.1
+# our processing window
+RING_BUFFER_CAPACITY : 10
+
+# data files
+DEVICE_DATA_FILE: data/car_data.csv
+EVENT_DATA_FILE: event_data.csv
+
+[INSURANCE]
+##TODO -- move to https
+ENDPOINT : 127.0.0.1
+PORT : 2000
+VERSION : NULL
+PROTOCOL : http
+
+[SMART_CITY]
+ENDPOINT : 127.0.0.1
+PORT: 2010
+VERSION : NULL
+PROTOCOL : http
+
+[MY_DRIVING]
+ENDPOINT : 127.0.0.1
+PORT : 2020
+VERSION: NULL
+PROTOCOL : http
+
