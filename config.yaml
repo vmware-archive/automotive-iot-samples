@@ -7,16 +7,21 @@ Driver: Alex Courouble
 DriverID: AC007
 ## TODO perhaps read from OBD
 VehicleID: BMW1234
+ data files
+DEVICE_DATA_FILE: data/car_data.csv
 
+# SENSORS
+SENSORS:  SPEED, RPM, FUEL_LEVEL, ABSOLUTE_LOAD, ENGINE_LOAD, RELATIVE_THROTTLE_POS, THROTTLE_POS_B
 
 [EDGE]
 # how frequency we read from the obd sensors
-SAMPLE_FREQUENCY : 0.1
+SAMPLING_FREQUENCY : 0.1  
 # our processing window
 RING_BUFFER_CAPACITY : 10
 
-# data files
-DEVICE_DATA_FILE: data/car_data.csv
+
+ 
+# POST PROCESSED EVENTS -- for analysis
 EVENT_DATA_FILE: event_data.csv
 
 [INSURANCE]
