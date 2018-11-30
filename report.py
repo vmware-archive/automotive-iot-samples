@@ -22,7 +22,7 @@ SMART_CITY_URL = make_url(config["SMART_CITY"])
 MY_DRIVING_URL = make_url(config["MY_DRIVING"])
 
 
-
+# might we want to add vehicle data too?
 def insurance_event_data(event_dict, autoID):
     return {
         "client_side_id": autoID.driverID,
@@ -41,9 +41,13 @@ def smart_city_event_data(event_dict):
             "gps_coord": event_dict["GPS"]
             }
 
-def my_driving_event_data(date, distance, speedings, hard_breaks, places):
+def my_driving_event_data(date, distance, speedings, hard_breaks, places, autoID):
     return {
         "date": date,
+        "client_side_id": autoID.driverID,
+        "user": autoID.driverName, 
+        "vehicle_model": autoID.vehicle_model,
+        "vehicleID": autoID.vehicleID,
         "distance": distance,
         "speedings" : len(speedings), # perhaps we want the time and gps co-ordinates
         "hard_breaks": len(hard_breaks) ,# perhaps we want the time and gps co-ordinates
@@ -74,7 +78,7 @@ def report_smart_city_event(event_dict) :
         print(response.status_code)
 
 
-def report_my_drive_event(date, distance, speedings, hard_breaks, places):
+def report_my_drive_event(date, distance, speedings, hard_breaks, places, autoID):
     data = auto_domain.my_driving_event_data(date, distance, speedings, hard_breaks, places)
     data_json = json.dumps(data)
     headers = {'Content-type': 'application/json'}
@@ -112,7 +116,7 @@ def report_all_events():
                 drive.update_events(event_dict)
                 report_event(event_dict, autoID)         
     if constants.MY_DRIVING_ENABLED:
-        report_my_drive_event(datetime.date.today(), distance, num_speedings, num_hard_breaks, places)
+        report_my_drive_event(datetime.date.today(), distance, num_speedings, num_hard_breaks, places, autoID)
 
 
 def test():
