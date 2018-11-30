@@ -1,0 +1,14 @@
+Have not handled
+1) software update at the edge, and confirming that the software is valid/signature verified
+2) have not handled security of the device itself
+3) Have not handled that we transmit only relevant fields to each application endpoint
+4) Transmitting a stream of events to the server -- sending over a pickle -- binary format
+5) For security checking its signature
+
+
+
+Resources:
+==========
+https://www.verizonconnect.com/resources/article/harsh-braking-acceleration-why-monitor/
+safe breaking speeds - https://copradar.com/chapts/references/acceleration.html
+http://tracknet.accountsupport.com/wp-content/uploads/Verizon/Hard-Brake-Hard-Acceleration.pdf
