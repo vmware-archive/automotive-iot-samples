@@ -1,28 +1,54 @@
 
 [COMMON]
 DEBUG : True
+# units seconds
+RESPONSE_LATENCY : 60
 
 [DEVICE]
-Driver: Alex Courouble
-DriverID: AC007
-## TODO perhaps read from OBD
-VehicleID: BMW1234
- data files
-DEVICE_DATA_FILE: data/car_data.csv
+DRIVER_NAME: Alex Courouble
+DRIVER_ID: AC007
+VEHICLE_MODEL: BMW
+VEHICLE_ID: BMW1234
+
+# Pre-recorded device data
+DEVICE_DATA_FILENAME: data/car_data.csv
 
 # SENSORS
-SENSORS:  SPEED, RPM, FUEL_LEVEL, ABSOLUTE_LOAD, ENGINE_LOAD, RELATIVE_THROTTLE_POS, THROTTLE_POS_B
+SENSORS: SPEED, RPM, FUEL_LEVEL, ABSOLUTE_LOAD, ENGINE_LOAD, RELATIVE_THROTTLE_POS, THROTTLE_POS_B
+
+DISTANCE_UNITS_LABEL: miles
+
+DEFAULT_GPS: 37.7992520359445,-122.41955459117891
+
+LIVE: False
 
 [EDGE]
 # how frequency we read from the obd sensors
-SAMPLING_FREQUENCY : 0.1  
+SAMPLING_FREQUENCY: 0.1  
 # our processing window
-RING_BUFFER_CAPACITY : 10
+HISTORY: 10
+MAX_READINGS: 180000 
 
+EVENTS_FILENAME: data/events.csv
+EVENTS_FILENAME_BACKUP: data/events.csv.bak
 
- 
-# POST PROCESSED EVENTS -- for analysis
-EVENT_DATA_FILE: event_data.csv
+DISTANCE_FILENAME: data/distance_traveled.txt
+DISTANCE_FILENAME_BACKUP: data/distance_traveled.txt.bak
+
+# Stream events
+STREAM: False
+
+#in seconds to contact the server
+# 5 minutes -- or is this too long?
+
+REPORT_RETRY_SEC: 300
+# 2 seconds
+SAVE_LOCAL_SEC : 2
+
+# Applications that are enabled
+INSURANCE_ENABLED: True
+MY_DRIVING_ENABLED: False
+SMART_CITY_ENABLED: False
 
 [INSURANCE]
 ##TODO -- move to https
