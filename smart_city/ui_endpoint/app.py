@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask import request
 from flask import json
-from IoT_cloud_API_endpoint.db import write_event, read_last_event
+from ui_endpoint.db import write_event, read_last_event
 
 
 # Initiating the flask app
@@ -35,8 +35,6 @@ def get_last_event():
     # get last event (in terms of timestamp)
     row = read_last_event()
     res_data = {
-        "client_side_id": row[0][0],
-        "user": row[0][1],
         "event_type": row[0][2],
         "event_timestamp": row[0][3],
         "gps_coord": row[0][4]
