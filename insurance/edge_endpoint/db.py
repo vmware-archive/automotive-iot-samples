@@ -54,3 +54,14 @@ def read_last_event():
 
     return row
 
+def read_events():
+    """
+    Reads last event from DB.
+    """
+    db = get_db()
+
+    # Returning all events from DB
+    # TODO: pagination
+    rows = db.execute("""SELECT client_side_id, user, event_type, event_timestamp, gps_coord FROM events""").fetchall()
+
+    return rows

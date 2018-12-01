@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask import request
 from flask import json
-from insurance_endpoint.db import write_event, read_last_event
+from edge_endpoint.db import write_event, read_last_event
 
 
 # Initiating the flask app

@@ -10,7 +10,7 @@ def get_db():
     """
     if 'db' not in g:
         g.db = sqlite3.connect(
-            'cloud_db.db',
+            '../cloud_db.db',
             detect_types=sqlite3.PARSE_DECLTYPES
             )
         g.db.row_factory = sqlite3.Row
@@ -54,3 +54,14 @@ def read_last_event():
 
     return row
 
+def read_events():
+    """
+    Reads last event from DB.
+    """
+    db = get_db()
+
+    # Returning all events from DB
+    # TODO: pagination
+    rows = db.execute("""SELECT client_side_id, user, event_type, event_timestamp, gps_coord FROM events""").fetchall()
+
+    return rows
