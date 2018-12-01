@@ -20,7 +20,7 @@ DISTANCE_UNITS_LABEL: miles
 
 DEFAULT_GPS: 37.7992520359445,-122.41955459117891
 
-LIVE: False
+LIVE: True
 
 [EDGE]
 # how frequency we read from the obd sensors
@@ -35,8 +35,10 @@ EVENTS_FILENAME_BACKUP: data/events.csv.bak
 DISTANCE_FILENAME: data/distance_traveled.txt
 DISTANCE_FILENAME_BACKUP: data/distance_traveled.txt.bak
 
-# Stream events
+# Stream events to Cloud Endpoints
 STREAM: False
+# Record sensor data to file or other persistent store
+RECORD: True
 
 #in seconds to contact the server
 # 5 minutes -- or is this too long?
