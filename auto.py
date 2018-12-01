@@ -69,51 +69,46 @@ class Automobile():
     def __init__(self, autoID, sensors_str):
         self.autoID = autoID
         sensors = clean_keys(sensors_str)   
-        # self.obd_connection = obd.OBD()
+        try :
+            self.obd_connection = obd.OBD()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            self.obd_connection = Null
+
+
+    def is_connected(self):
+        return self.obd_connection.is_connected()
 
     def get_sensors_str(self):
         return ",".join(self.keys)
 
     def read_sensors(self):
         """
-        returns a dict of sensor readings as strings
+        if an OBD connectio exists, it shall retrieve requested sensor data
+        and return as a dictionary. 
         """
-        data_dict = {}
-        if (self.obd_connection is not None):
-            val = str(time.time())
-            data_dict["TIME"] = val
+        data_dict = None
+        if (self.obd_connection.is_connected()):
+            data_dict = {"TIME": time.time()}
             for sensor in self.sensors:
                 # appending results to row
                 try:
                     # TODO GPS implementation
+                    val = None
                     if (sensor == "GPS") :  
                         val = constants.DEFAULT_GPS
                     else:
                         val = str(connection.query(sensor).value.magnitude)
                 except:
                     val = "Error"   
-                data_dict[sensor] = val  
-        else:
-            print("Unable to connect to sensors and read!!") 
-            data_dict = None
-
-        if (constants.DEBUG):
+                data_dict[sensor] = val
+            if (constants.DEBUG):
                 print(data_dict)
-    
-        return data_dict
-
-
-    def to_compact_str(self, data_dict):
-        data_dict = read_sensors()
-        if (data_dict):
-            line_text = data_dict["TIME"] 
-            for sensor in self.sensors:
-                line_text += ","
-                line_text += data_dict[sensor]
+            return data_dict
         else:
-            line_text = "Error"
-        return line_text
-
+            print("Unable to connect to obd sensors and read!!") 
+            return None
+       
 
 # add locks for later multithread programming
 class RingBuffer:

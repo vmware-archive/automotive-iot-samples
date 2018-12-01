@@ -57,24 +57,40 @@ def process_recorded_data():
         print("No car data to process! Bye!")
 
 
+def record_sensor_headings():
+    with open(constants.DATA_FILENAME, 'w') as file:
+        file.write(constants.SENSORS)
+
+def record_sensor_readings(data_dict):
+    sensor_vals = []
+    for key, val in data_dict.items():
+        sensor_vals.append(str(val))
+    vals =  ",".join(sensor_vals)
+    with open(constants.DATA_FILENAME, 'w') as file:
+        file.write(vals)
+   
+
 def process_live_data():
     autoID =  AutoID(constants.DRIVER_NAME, constants.DRIVER_ID, constants.VEHICLE_MODEL, constants.VEHICLE_ID)
     automobile = Automobile(autoID, constants.SENSORS)
+    if not automobile.is_connected():
+        print("Unable to connect to automobile sensors. \nBye!")
+
     drive = Drive(autoID, constants.SAMPLING_FREQUENCY, constants.HISTORY)
-    with open(constants.DATA_FILENAME, 'w') as file:
-        for i in range(constants.MAX_READINGS):
-        # while (True):
-            data_dict = automobile.read_sensors()
-            if data_dict:
-                # record the data to revisit ..
-                file.write(automobile.to_compact_str(data_dict)) 
-                process_stream_data(drive, data_dict) 
-            time.sleep(constants.SAMPLING_FREQUENCY)
+    if constants.RECORD:
+            record_sensor_headings()
+
+    while automobile.is_connected():
+        data_dict = automobile.read_sensors()
+
+        if data_dict:
+            process_stream_data(drive, data_dict) 
+        if constants.RECORD:
+            record_sensor_readings(data_dict)
+
+        time.sleep(constants.SAMPLING_FREQUENCY)
 
 def main():
-    # sensors_str = "TIME, SPEED, RPM, FUEL_LEVEL, ABSOLUTE_LOAD, ENGINE_LOAD, RELATIVE_THROTTLE_POS, THROTTLE_POS_B" 
-    # dp = DataParser(sensors_str)
-    # dp.parse("1537304004,39,2690,28.23529412,42.35294118,23.92156863,11.76470588,22.35294118, ")
    
     if constants.LIVE:
         process_live_data()
