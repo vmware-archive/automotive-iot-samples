@@ -86,10 +86,10 @@ def log_distance(distance_units):
 # do we not want the units?
 # do we want return value to be an integer?
 def get_distance():
-    filename = constants.DISTANCE_FILENAME
+    filename = constants.DISTANCE_TRAVELED_FILENAME
     if Path(filename).is_file():
         with open(filename, 'r') as file:
             distance_str = file.read()
-        os.rename(filename, constants.DISTANCE_FILENAME_BACKUP)
+        os.rename(filename, constants.DISTANCE_TRAVELED_FILENAME_BACKUP)
     else:
         return distance_traveled(0)

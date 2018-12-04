@@ -32,8 +32,8 @@ MAX_READINGS: 180000
 EVENTS_FILENAME: data/events.csv
 EVENTS_FILENAME_BACKUP: data/events.csv.bak
 
-DISTANCE_FILENAME: data/distance_traveled.txt
-DISTANCE_FILENAME_BACKUP: data/distance_traveled.txt.bak
+DISTANCE_TRAVELED_FILENAME: data/distance_traveled.txt
+DISTANCE_TRAVELED_FILENAME_BACKUP: data/distance_traveled.txt.bak
 
 # Stream events to Cloud Endpoints
 STREAM: False

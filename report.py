@@ -113,33 +113,32 @@ def report_smart_city_event(event_dict):
     returns:
     a dictionary that captures all the information that a smart_city event must contain per the insurance cloud endpoint
     """
-
-    data_json = json.dumps(auto_domain.smart_city_event(event_dict))
+    data_json = json.dumps(smart_city_event_data(event_dict))
     headers = {'Content-type': 'application/json'}
     url = SMART_CITY_URL + "add_event"
     response = requests.post(url, data=data_json, headers=headers)
     if constants.DEBUG:
-        print("*********** Smart City Reporting  "+ event_type )
+        print("*********** Smart City Reporting  " + event_dict["EVENT_TYPE"])
         print(response.status_code)
 
 
 def report_my_drive_event(date, distance, speedings, hard_breaks, places, autoID):
-    data = auto_domain.my_driving_event_data(date, distance, speedings, hard_breaks, places)
+    data = my_driving_event_data(date, distance, speedings, hard_breaks, places, autoID)
     data_json = json.dumps(data)
     headers = {'Content-type': 'application/json'}
     url = MY_DRIVING_URL + "add_event"
     response = requests.post(url, data=data_json, headers=headers)
     if constants.DEBUG:
-        print("*********** My Driving Reporting  "+ event_type )
+        print("*********** Reporting My Driving Report")
         print(response.status_code)
 
-def report_event(event_dict):
+def report_event(event_dict, autoID):
     event_type = event_dict["EVENT_TYPE"]
     if (constants.INSURANCE_ENABLED and (event_type in constants.INSURANCE_EVENTS)):
         print("Found a " + event_type + " to report!!!")
         report_insurance_event(event_dict, autoID)
     if constants.SMART_CITY_ENABLED:
-        report_smart_city_event(event_dict, autoID)
+        report_smart_city_event(event_dict)
 
 
 def report_all_events():
@@ -160,12 +159,12 @@ def report_all_events():
         for cnt, event_str in enumerate(file):
             print(str(cnt) + "  " + event_str)
             event_dict = auto_domain.get_event_dict(event_str)
-            report_event(event_type, event_dict)
+            report_event(event_dict, autoID)
             if constants.MY_DRIVING_ENABLED:
                 drive.update_events(event_dict)
                       
     if constants.MY_DRIVING_ENABLED:
-        report_my_drive_event(datetime.date.today(), distance, num_speedings, num_hard_breaks, places, autoID)
+        report_my_drive_event(datetime.date.today(), distance, len(drive.speedings), len(drive.hard_breaks), places, autoID)
 
 
 def test():
@@ -202,8 +201,9 @@ def main():
                 report_all_events()
                 successful = True
                 os.rename(constants.EVENTS_FILENAME, constants.EVENTS_FILENAME_BACKUP)
-                if Path(constants.DISTANCE_FILENAME).is_file():
-                    os.rename(constants.DISTANCE_FILENAME, constants.DISTANCE_FILENAME_BACKUP)
+                if Path(constants.DISTANCE_TRAVELED_FILENAME).is_file():
+                    os.rename(constants.DISTANCE_TRAVELED_FILENAME, 
+                        constants.DISTANCE_TRAVELED_FILENAME_BACKUP)
             except:
                 time.sleep(constants.REPORT_RETRY_SEC)
                 #keep trying!  
