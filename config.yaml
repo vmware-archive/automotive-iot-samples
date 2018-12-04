@@ -20,7 +20,7 @@ DISTANCE_UNITS_LABEL: miles
 
 DEFAULT_GPS: 37.7992520359445,-122.41955459117891
 
-LIVE: True
+LIVE: False
 
 [EDGE]
 # how frequency we read from the obd sensors
