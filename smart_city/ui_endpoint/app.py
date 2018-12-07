@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask import request
 from flask import json
-from ui_endpoint.db import read_events
+from app.db import read_events
 
 
 # Initiating the flask app

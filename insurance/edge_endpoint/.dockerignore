@@ -1,0 +1,6 @@
+.DS_Store
+node_module
+build
+.vscode
+*.pyc
+README.md

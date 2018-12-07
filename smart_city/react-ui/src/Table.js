@@ -15,7 +15,7 @@ class Table extends Component {
 
   componentDidMount() {
     // TODO: IP and port from config file?
-    axios.get("http://0.0.0.0:2000/events").then(res => {
+    axios.get("http://0.0.0.0:3002/events").then(res => {
       const data = res.data;
       this.setState({data});
     });

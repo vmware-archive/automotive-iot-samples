@@ -9,7 +9,7 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-CMD ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=2000"]
+CMD ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=3000"]
 
 #############
 # Build:
