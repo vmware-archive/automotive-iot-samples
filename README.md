@@ -1,3 +1,3 @@
 ```
-docker-compose up --build -d --force-recreate
+docker-compose up -d --force-recreate
 ```
