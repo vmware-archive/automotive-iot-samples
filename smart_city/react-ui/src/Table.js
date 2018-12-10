@@ -20,17 +20,23 @@ class Table extends Component {
       this.setState({data});
     });
   }
+
+  convertDate(timestamp){
+    const date = new Date(timestamp* 1000);
+    return date.toISOString();
+  }
+
   render() {
     const { data } = this.state;
     const columns = [
       {
         Header: "Type",
         accessor: "event_type"
-        // Cell: props => <span className='number'>{props.value}</span> // Custom cell components!
       },
       {
         Header: "Time",
-        accessor: "event_timestamp"
+        accessor: "event_timestamp",
+        Cell: props => <span>{this.convertDate(props.value)}</span>
       },
       {
         Header: "Location",
