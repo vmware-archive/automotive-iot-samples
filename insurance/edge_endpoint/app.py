@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask import request
 from flask import json
-from edge_endpoint.db import write_event, read_last_event
+from app.db import write_event, read_last_event
 
 
 # Initiating the flask app
