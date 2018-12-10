@@ -11,11 +11,20 @@ import requests
 import time
 
 def make_url(config_section):
+    """ function that reads the specified configuration category related settings for protocol, IP address, port, and version
+    to construct a url string
+    params:
+    config section: String  (example: "INSURANCE", "SMART_CITY", "MY_DRIVING")
+    returns:
+    url: String
+    """
     url_str = config_section["PROTOCOL"] + "://" + config_section["ENDPOINT"] + ":" + str(config_section["PORT"]) + "/"
     version = config_section["VERSION"]
     if (version != "NULL"): 
         url_str = url_str + config_section["VERSION"] + "/"
     return url_str
+
+ ## constants constructed from the configuration file.    
 
 INSURANCE_URL = make_url(config["INSURANCE"])
 SMART_CITY_URL = make_url(config["SMART_CITY"])
@@ -24,6 +33,14 @@ MY_DRIVING_URL = make_url(config["MY_DRIVING"])
 
 # might we want to add vehicle data too?
 def insurance_event_data(event_dict, autoID):
+    """
+    Assemble insurance event relevant data for transmission to insurance cloud endpoint
+    params:
+    event_dict which contains event_type, speed, gps-coordinates, and time information
+    autoID: object that containers drivername, driverID, vehicle_model and vehicleID
+    returns:
+    a dictionary that captures all the information that an insurance event must contain per the insurance cloud endpoint
+    """
     return {
         "client_side_id": autoID.driverID,
         "user": autoID.driverName, 
@@ -34,6 +51,13 @@ def insurance_event_data(event_dict, autoID):
 
 # seems to be the same thing but the case of the keys is lower, and gps_coord (as opposed to GPS)
 def smart_city_event_data(event_dict):
+    """
+    Assembles smart_city event relevant data for transmission to smart_city cloud endpoint
+    params:
+    event_dict which contains event_type, speed, gps-coordinates, and time information
+    returns:
+    a dictionary that captures all the information that an insurance event must contain per the insurance cloud endpoint
+    """
     return {
             "event_type": event_dict["EVENT_TYPE"],
             "speed": event_dict["SPEED"],
@@ -42,6 +66,14 @@ def smart_city_event_data(event_dict):
             }
 
 def my_driving_event_data(date, distance, speedings, hard_breaks, places, autoID):
+    """
+    Assembles My_Driving event relevant event data  
+    params:
+    date, distance, number of speedings, number of hard breaks, places visited, 
+    and AutoID object (contains driver and vehicle information)
+    returns:
+    a dictionary containing My_Driving relevant information.
+    """
     return {
         "date": date,
         "client_side_id": autoID.driverID,
@@ -57,7 +89,12 @@ def my_driving_event_data(date, distance, speedings, hard_breaks, places, autoID
 
 def report_insurance_event(event_dict, autoID) :
     """
-        Send insurance event to cloud endpoint
+    Send insurance event to insurance cloud endpoint
+    params:
+    event_dict: event_type, speed, gps-coordinates, time
+    autoID: object that containers drivername, driverID, vehicle_model and vehicleID
+    returns:
+    a dictionary that captures all the information that an insurance event must contain per the insurance cloud endpoint
     """
     data_json = json.dumps(insurance_event_data(event_dict, autoID))
     headers = {'Content-type': 'application/json'}
@@ -68,58 +105,72 @@ def report_insurance_event(event_dict, autoID) :
         print(response.status_code)
 
 
-def report_smart_city_event(event_dict) :
-    data_json = json.dumps(auto_domain.smart_city_event(event_dict))
+def report_smart_city_event(event_dict):
+    """
+    Send Smart_City  event to Smart_City  cloud endpoint
+    params:
+    event_dict  (contains event_type, speed, gps-coordinates, time information)
+    returns:
+    a dictionary that captures all the information that a smart_city event must contain per the insurance cloud endpoint
+    """
+    data_json = json.dumps(smart_city_event_data(event_dict))
     headers = {'Content-type': 'application/json'}
     url = SMART_CITY_URL + "add_event"
     response = requests.post(url, data=data_json, headers=headers)
     if constants.DEBUG:
-        print("*********** Smart City Reporting  "+ event_type )
+        print("*********** Smart City Reporting  " + event_dict["EVENT_TYPE"])
         print(response.status_code)
 
 
 def report_my_drive_event(date, distance, speedings, hard_breaks, places, autoID):
-    data = auto_domain.my_driving_event_data(date, distance, speedings, hard_breaks, places)
+    data = my_driving_event_data(date, distance, speedings, hard_breaks, places, autoID)
     data_json = json.dumps(data)
     headers = {'Content-type': 'application/json'}
     url = MY_DRIVING_URL + "add_event"
     response = requests.post(url, data=data_json, headers=headers)
     if constants.DEBUG:
-        print("*********** My Driving Reporting  "+ event_type )
+        print("*********** Reporting My Driving Report")
         print(response.status_code)
 
-def report_event(event_dict, autoID): 
+def report_event(event_dict, autoID):
     event_type = event_dict["EVENT_TYPE"]
     if (constants.INSURANCE_ENABLED and (event_type in constants.INSURANCE_EVENTS)):
         print("Found a " + event_type + " to report!!!")
         report_insurance_event(event_dict, autoID)
     if constants.SMART_CITY_ENABLED:
-        report_smart_city_event(event_dict, autoID)
-
+        report_smart_city_event(event_dict)
 
 
 def report_all_events():
+    """
+    Processes all events recorded in events log file iteratively.
+    Based on event type and enabled cloud endpoints, events are reported.
+    Slow-down events are reported only to smart city, and no driver or vehicle ID data is shared with smart city.
+    Only a single event is transmitted at the end of drive ssion to the My Driving endpoint
+    """
+
     autoID = auto.AutoID(constants.DRIVER_NAME, constants.DRIVER_ID, constants.VEHICLE_MODEL, constants.VEHICLE_ID)   
     print("The driver is " + autoID.driverID)
     drive = auto.Drive(autoID,constants.SAMPLING_FREQUENCY, constants.HISTORY)
     places = "Paris, Timbucktoo"
     distance = auto_domain.get_distance()
-
-    
+ 
     with open(constants.EVENTS_FILENAME,'r') as file:
         for cnt, event_str in enumerate(file):
             print(str(cnt) + "  " + event_str)
             event_dict = auto_domain.get_event_dict(event_str)
-            event_type = event_dict["EVENT_TYPE"]
-            report_event(event_dict, autoID) 
+            report_event(event_dict, autoID)
             if constants.MY_DRIVING_ENABLED:
                 drive.update_events(event_dict)
-                report_event(event_dict, autoID)         
+                      
     if constants.MY_DRIVING_ENABLED:
-        report_my_drive_event(datetime.date.today(), distance, num_speedings, num_hard_breaks, places, autoID)
+        report_my_drive_event(datetime.date.today(), distance, len(drive.speedings), len(drive.hard_breaks), places, autoID)
 
 
 def test():
+    """
+    Test payload transmission to insurance cloud endpoint
+    """
     autoID = auto.AutoID("a", "b", "c", "d")
     event_dict = { "TIME" : 123456,
                    "EVENT_TYPE": "hard_break",
@@ -131,6 +182,15 @@ def test():
 
 # do we have connectivity?!
 def main():
+    """
+    Reports all events saved in events log file to enabled cloud endpoints:
+    Insurance
+    Smart City and
+    My Driving
+    The assumption is that durig driving no internet access is available.
+    Thus events saved to an events log file.
+    """
+
     test()
     if Path(constants.EVENTS_FILENAME).is_file():
         successful = False
@@ -141,8 +201,9 @@ def main():
                 report_all_events()
                 successful = True
                 os.rename(constants.EVENTS_FILENAME, constants.EVENTS_FILENAME_BACKUP)
-                if Path(constants.DISTANCE_FILENAME).is_file():
-                    os.rename(constants.DISTANCE_FILENAME, constants.DISTANCE_FILENAME_BACKUP)
+                if Path(constants.DISTANCE_TRAVELED_FILENAME).is_file():
+                    os.rename(constants.DISTANCE_TRAVELED_FILENAME, 
+                        constants.DISTANCE_TRAVELED_FILENAME_BACKUP)
             except:
                 time.sleep(constants.REPORT_RETRY_SEC)
                 #keep trying!  
