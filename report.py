@@ -151,7 +151,7 @@ def report_all_events():
 
     autoID = auto.AutoID(constants.DRIVER_NAME, constants.DRIVER_ID, constants.VEHICLE_MODEL, constants.VEHICLE_ID)   
     print("The driver is " + autoID.driverID)
-    drive = auto.Drive(autoID,constants.SAMPLING_FREQUENCY, constants.HISTORY)
+    drive = auto.Drive(autoID,constants.SAMPLING_FREQUENCY, constants.HISTORY, constants.SAVE_INTERVAL_LOCAL)
     places = "Paris, Timbucktoo"
     distance = auto_domain.get_distance()
  

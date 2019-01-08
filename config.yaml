@@ -45,7 +45,7 @@ RECORD: True
 
 REPORT_RETRY_SEC: 300
 # 2 seconds
-SAVE_LOCAL_SEC : 2
+SAVE_INTERVAL_LOCAL: 2
 
 # Applications that are enabled
 INSURANCE_ENABLED: True

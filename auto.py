@@ -152,25 +152,29 @@ class Drive():
     total_distance_units = 0 
     # last time the distance traveled information was saved to some persistence store
     last_save_time = 0
+    # peridically save the data locally to protect from connectivity issues, crashes, power-off
+    save_interval= -1
 
     speedings = []
     hard_breaks = []
     slow_downs = []
     
-    def __init__(self, autoID, time_unit, history): 
+    def __init__(self, autoID, time_unit, history, save_interval): 
         self.autoID = autoID
         self.time_unit = time_unit  
         self.data_buffer = RingBuffer(history) 
+        self.save_interval = save_interval
         self.last_save_time = time.time()
 
-    
+    # a helper method to determine based on configured parameters whether to persist data locally
     def save_time(self):
         retval = False
-        now = time.time()  # time since epoch in seconds as a float
-        if ((now - self.last_save_time) > constants.SAVE_LOCAL_SEC):
-            self.last_save_time = now
-            retval = True
-        print("save distance now = " + str(retval))
+        if (self.save_interval > -1.0):
+            now = time.time()  # time since epoch in seconds as a float
+            if ((now - self.last_save_time) > self.save_interval):
+                self.last_save_time = now
+                retval = True
+                print("save distance now = " + str(retval))
         return retval
 
     # for efficiency will deal with the time multiplier when consuming this value elsewhere

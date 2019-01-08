@@ -12,15 +12,21 @@ git clone https://gitlab.eng.vmware.com/mbhandaru/car_edge
 cd car_edge
 ```
 
-3. Initialise the python virtual environment:
+3. Python3
+3a. If you do not have python3, install it.
+    For Mac OSX, installing a package manager such as homebrew (see https://docs.python-guide.org/starting/install3/osx/)
+    > brew install python3
+
+4a. Set up python virtual environment:
 ```
 python3 -m venv venv
 ```
 
-4. Activate virtual environment:
+4b. Activate virtual environment:
 ```
 . venv/bin/activate
 ```
+
 5. Upgrade pip
 pip install --upgrade pip
 

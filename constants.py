@@ -34,7 +34,7 @@ INSURANCE_ENABLED = "True" == config["EDGE"]["INSURANCE_ENABLED"]
 MY_DRIVING_ENABLED = "True" == config["EDGE"]["MY_DRIVING_ENABLED"]
 SMART_CITY_ENABLED = "True" == config["EDGE"]["SMART_CITY_ENABLED"]
 REPORT_RETRY_SEC = int(config["EDGE"]["REPORT_RETRY_SEC"])
-SAVE_LOCAL_SEC = float(config["EDGE"]["SAVE_LOCAL_SEC"])
+SAVE_INTERVAL_LOCAL = float(config["EDGE"]["SAVE_INTERVAL_LOCAL"])
 
 ## auto domain related constants
 

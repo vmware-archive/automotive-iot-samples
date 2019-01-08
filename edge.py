@@ -13,8 +13,10 @@ def process_stream_data(drive, data_dict):
     speed = int(data_dict["SPEED"])
     drive.data_buffer.add_element(speed)
     drive.update_distance(speed)
+    # periodically persist the distance traveled, so as not to lose all the data should the device reboot/power-off
     if drive.save_time():
         auto_domain.log_distance(drive.total_distance_unit)
+
     event_type = auto_domain.get_event_type(drive, data_dict)
     if not (event_type == constants.NORMAL):
         data_dict["EVENT_TYPE"] = event_type  # data_dict enhanced with event_type 
@@ -24,6 +26,8 @@ def process_stream_data(drive, data_dict):
             report_event(data_dict, drive.autoID)
     
 
+# Read the pre-recorded data and process each item as if live-streamed
+# thus the call to process_stream_data
 def process_recorded_data():
     print("Reading pre-recorded data from: " + constants.DATA_FILENAME)
     if Path(constants.DATA_FILENAME).is_file():
@@ -40,7 +44,7 @@ def process_recorded_data():
                     autoID =  AutoID(constants.DRIVER_NAME, constants.DRIVER_ID, constants.VEHICLE_MODEL, constants.VEHICLE_ID)
                     print("autoID constructed")
                     print("the driverID = " + autoID.driverID)
-                    drive = Drive(autoID,constants.SAMPLING_FREQUENCY, constants.HISTORY)
+                    drive = Drive(autoID,constants.SAMPLING_FREQUENCY, constants.HISTORY, constants.SAVE_INTERVAL_LOCAL)
                     for cnt, data_line in enumerate(file):
                         if constants.DEBUG:
                             print(data_line)
@@ -76,7 +80,7 @@ def process_live_data():
     if not automobile.is_connected():
         print("Unable to connect to automobile sensors. \nBye!")
 
-    drive = Drive(autoID, constants.SAMPLING_FREQUENCY, constants.HISTORY)
+    drive = Drive(autoID, constants.SAMPLING_FREQUENCY, constants.HISTORY, constants.SAVE_INTERVAL_LOCAL)
     if constants.RECORD:
             record_sensor_headings()
 
