@@ -10,14 +10,14 @@ services:
     ports: 
       - "2000:2000"
     volumes: 
-      - ./insurance/cloud_db.db:/cloud_db.db
+      - ./insurance/data:/data
   
   insurance_api:
     build: ./insurance/ui_endpoint/
     ports: 
       - "3000:3000"
     volumes: 
-      - ./insurance/cloud_db.db:/cloud_db.db
+      - ./insurance/data:/data
 
   insurance_ui:
     build: ./insurance/react-ui/
@@ -32,14 +32,14 @@ services:
     ports: 
       - "2001:2001"
     volumes: 
-      - ./my_driving/cloud_db.db:/cloud_db.db
+      - ./my_driving/data:/data
   
   my_driving_api:
     build: ./my_driving/ui_endpoint/
     ports: 
       - "3001:3001"
     volumes: 
-      - ./my_driving/cloud_db.db:/cloud_db.db
+      - ./my_driving/data:/data
 
   my_driving_ui:
     build: ./my_driving/react-ui/
@@ -54,14 +54,14 @@ services:
     ports: 
       - "2002:2002"
     volumes: 
-      - ./smart_city/cloud_db.db:/cloud_db.db
+      - ./smart_city/data:/data
   
   smart_city_api:
     build: ./smart_city/ui_endpoint/
     ports: 
       - "3002:3002"
     volumes: 
-      - ./smart_city/cloud_db.db:/cloud_db.db
+      - ./smart_city/data:/data
 
   smart_city_ui:
     build: ./smart_city/react-ui/
