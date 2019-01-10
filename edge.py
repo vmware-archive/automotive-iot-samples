@@ -85,8 +85,8 @@ def process_live_data():
             record_sensor_headings()
 
     while automobile.is_connected():
+        # reads the data from the various sensors
         data_dict = automobile.read_sensors()
-
         if data_dict:
             process_stream_data(drive, data_dict) 
         if constants.RECORD:

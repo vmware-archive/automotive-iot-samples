@@ -11,12 +11,15 @@ VEHICLE_MODEL = config["DEVICE"]["VEHICLE_MODEL"]
 VEHICLE_ID = config["DEVICE"]["VEHICLE_ID"]
 SENSORS = config["DEVICE"]["SENSORS"]
 DISTANCE_UNITS_LABEL= config["DEVICE"]["DISTANCE_UNITS_LABEL"]
-# to avoid gps errors till implemented
+GPS_SERIAL = config["DEVICE"]["GPS_SERIAL"]
+GPS_BAUD_RATE = 4800
+# fake gps co-ordinates till it becomes live 
 DEFAULT_GPS = config["DEVICE"]["DEFAULT_GPS"]
+
 LIVE = "True" == config["DEVICE"]["LIVE"]
 
 SAMPLING_FREQUENCY = float(config["EDGE"]["SAMPLING_FREQUENCY"])
-
+ 
 DATA_FILENAME = config["DEVICE"]["DEVICE_DATA_FILENAME"]
 
 STREAM = "True" == config["EDGE"]["STREAM"]

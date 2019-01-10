@@ -3,6 +3,7 @@ import constants
 import obd
 import serial
 import time
+import sys
 
 
 DEBUG = config["COMMON"]["DEBUG"]
@@ -63,21 +64,27 @@ class DataParser():
           
 class Automobile():
     autoID = None
-    obd_connection = None
+    obd_conn = None
+    gps_conn = None
     sensors = []
 
     def __init__(self, autoID, sensors_str):
         self.autoID = autoID
         sensors = clean_keys(sensors_str)   
         try :
-            self.obd_connection = obd.OBD()
+            self.obd_conn = obd.OBD()
         except:
-            print("Unexpected error:", sys.exc_info()[0])
-            self.obd_connection = Null
+            print("Unexpected error: unable to connect to OBD", sys.exc_info()[0])
+            self.obd_conn = None
+        try :
+            self.gps_conn = serial.Serial(constants.GPS_SERIAL, constants.GPS_BAUD_RATE, timeout=constants.SAMPLING_FREQUENCY)
+        except:
+            print("Unexpected error: unable to GPS", sys.exc_info()[0])
+            self.gps_conn = None
 
 
     def is_connected(self):
-        return self.obd_connection.is_connected()
+        return self.obd_conn.is_connected()
 
     def get_sensors_str(self):
         return ",".join(self.keys)
@@ -87,27 +94,28 @@ class Automobile():
         if an OBD connectio exists, it shall retrieve requested sensor data
         and return as a dictionary. 
         """
-        data_dict = None
-        if (self.obd_connection.is_connected()):
-            data_dict = {"TIME": time.time()}
+        data_dict = None 
+        # read GPS
+        # time and speed from GPS
+        if gps_conn:
+            line = gps_conn.readline()
+            data_dict["GPS_TIME"] = 1234
+            data_dict["GPS"] = ""
+        # read OBD sensors
+        if (self.obd_conn.is_connected()):
             for sensor in self.sensors:
                 # appending results to row
-                try:
-                    # TODO GPS implementation
-                    val = None
-                    if (sensor == "GPS") :  
-                        val = constants.DEFAULT_GPS
-                    else:
-                        val = str(connection.query(sensor).value.magnitude)
+                try:                 
+                    val = str(conn.query(sensor).value.magnitude)
                 except:
                     val = "Error"   
                 data_dict[sensor] = val
-            if (constants.DEBUG):
-                print(data_dict)
-            return data_dict
         else:
-            print("Unable to connect to obd sensors and read!!") 
-            return None
+            print("Unable to connect to obd sensors and read!!")  
+        if data_dict : data_dict["TIME"] = time.time()  # from the compute device
+        if (constants.DEBUG): print(data_dict)
+        return data_dict
+       
        
 
 # add locks for later multithread programming
@@ -159,10 +167,10 @@ class Drive():
     hard_breaks = []
     slow_downs = []
     
-    def __init__(self, autoID, time_unit, history, save_interval): 
+    def __init__(self, autoID, time_unit, ring_buffer_size, save_interval): 
         self.autoID = autoID
         self.time_unit = time_unit  
-        self.data_buffer = RingBuffer(history) 
+        self.data_buffer = RingBuffer(ring_buffer_size) 
         self.save_interval = save_interval
         self.last_save_time = time.time()
 
