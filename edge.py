@@ -6,7 +6,7 @@ from report import report_event
 from pathlib import Path
 import sys
 import time
-
+import datetime
 
 
 def process_stream_data(drive, data_dict):
@@ -61,41 +61,67 @@ def process_recorded_data():
         print("No car data to process! Bye!")
 
 
-def record_sensor_headings():
-    with open(constants.DATA_FILENAME, 'w') as file:
-        file.write(constants.SENSORS)
+def record_metrics_header(metric_list, output_file_name):
+    """
+    write header for each available sensor/metric
+    """
+    with open(output_file_name, 'w') as file:
+        # writting each metric on the header
+        file.write(",".join(metric_list)+"\n")
 
-def record_sensor_readings(data_dict):
+
+def record_sensor_readings(data_dict, metric_list, output_file_name):
+    """
+    Write data row to output file
+    """
     sensor_vals = []
-    for key, val in data_dict.items():
-        sensor_vals.append(str(val))
+    # going though metric_list to keep order consistent
+    for metric in metric_list:
+        if metric in data_dict:
+            sensor_vals.append(str(data_dict[metric]))
+        else:
+            # value not recorded properly
+            sensor_vals.append("null")
     vals =  ",".join(sensor_vals)
-    with open(constants.DATA_FILENAME, 'w') as file:
-        file.write(vals)
-   
+
+    # write to file
+    # TODO: keep file open for duration of the drive to avoid re-opening it at each iteration
+    with open(output_file_name, 'a') as file:
+        file.write(vals+"\n")
+
 
 def process_live_data():
+
     autoID =  AutoID(constants.DRIVER_NAME, constants.DRIVER_ID, constants.VEHICLE_MODEL, constants.VEHICLE_ID)
     automobile = Automobile(autoID, constants.SENSORS)
-    if not automobile.is_connected():
-        print("Unable to connect to automobile sensors. \nBye!")
-
     drive = Drive(autoID, constants.SAMPLING_FREQUENCY, constants.HISTORY, constants.SAVE_INTERVAL_LOCAL)
-    if constants.RECORD:
-            record_sensor_headings()
 
-    while automobile.is_connected():
+
+    # Printing headers to file (Depending on data points defined in config file)
+    metric_list = None
+    output_file_name = None
+    if constants.RECORD:
+        metric_list = automobile.get_tracked_metrics()
+
+        now = datetime.datetime.now()
+        output_file_name = "data/drive_" + now.strftime("%A_%d_%B_%Y_%I_%M%p") + ".csv"
+        print("Writting data to :" + output_file_name)
+        record_metrics_header(metric_list, output_file_name)
+
+    while True:
         # reads the data from the various sensors
         data_dict = automobile.read_sensors()
-        if data_dict:
-            process_stream_data(drive, data_dict) 
-        if constants.RECORD:
-            record_sensor_readings(data_dict)
+
+        # if data_dict:
+            # process_stream_data(drive, data_dict)
+        
+        # TODO: print data to file if recorded. Make sure all data is in and all
+        if constants.RECORD and metric_list:
+            record_sensor_readings(data_dict,metric_list, output_file_name)
 
         time.sleep(constants.SAMPLING_FREQUENCY)
 
 def main():
-   
     if constants.LIVE:
         process_live_data()
     else:

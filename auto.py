@@ -21,6 +21,23 @@ SENSOR_CMDS = {
     "THROTTLE_POS_C" : obd.commands.THROTTLE_POS_C
 }
 
+GPS_METRICS = [
+    'fix_time',
+    'validity',
+    'latitude',
+    'latitude_hemisphere' ,
+    'longitude' ,
+    'longitude_hemisphere' ,
+    'speed',
+    'true_course',
+    'fix_date',
+    'variation',
+    'variation_e_w',
+    'checksum',
+    'decimal_latitude',
+    'decimal_longitude'
+    ]
+
 class AutoID () :
     driverName = "Someone"
     driverID = "1234"
@@ -67,56 +84,154 @@ class Automobile():
     obd_conn = None
     gps_conn = None
     sensors = []
+    metrics = {}
 
-    def __init__(self, autoID, sensors_str):
+    def __init__(self, autoID, sensors):
         self.autoID = autoID
-        sensors = clean_keys(sensors_str)   
-        try :
-            self.obd_conn = obd.OBD()
-        except:
-            print("Unexpected error: unable to connect to OBD", sys.exc_info()[0])
-            self.obd_conn = None
-        try :
-            self.gps_conn = serial.Serial(constants.GPS_SERIAL, constants.GPS_BAUD_RATE, timeout=constants.SAMPLING_FREQUENCY)
-        except:
-            print("Unexpected error: unable to GPS", sys.exc_info()[0])
-            self.gps_conn = None
+        self.sensors = sensors
+        self.metrics = None
 
+        if "OBD" in self.sensors:
+            try :
+                self.obd_conn = obd.OBD()
+            except:
+                print("Unexpected error: unable to connect to OBD", sys.exc_info()[0])
+                self.obd_conn = None
+        
+        if "GPS" in self.sensors:
+            for i in range(11):
+                try :
+                    print("Trying top connect to GPS on serial /dev/ttyUSB" + str(i))
+                    self.gps_conn = serial.Serial("/dev/ttyUSB" + str(i), constants.GPS_BAUD_RATE, timeout=constants.SAMPLING_FREQUENCY)
+                    print("Connected to serial /dev/ttyUSB" + str(i))
+                    break
+                except:
+                    print("Unexpected error: unable to GPS", sys.exc_info()[0])
+                    self.gps_conn = None
 
-    def is_connected(self):
-        return self.obd_conn.is_connected()
+    def get_tracked_metrics(self):
+        """
+        Returns list of tracked metrics according to connected sensors
+        and metrics supported by car (for OBD)
+        """
+        metric_list = []
 
-    def get_sensors_str(self):
-        return ",".join(self.keys)
+        if self.gps_conn:
+            metric_list += GPS_METRICS
+        if self.obd_conn:
+            metric_list += SENSOR_CMDS.keys()
+
+        # Returns None if no connection was made
+        if not self.gps_conn and not self.obd_conn:
+            return None
+        
+        return metric_list
+
 
     def read_sensors(self):
         """
-        if an OBD connectio exists, it shall retrieve requested sensor data
+        if OBD or GPS connection exist, it shall retrieve requested sensor data
         and return as a dictionary. 
         """
-        data_dict = None 
-        # read GPS
-        # time and speed from GPS
-        if gps_conn:
-            line = gps_conn.readline()
-            data_dict["GPS_TIME"] = 1234
-            data_dict["GPS"] = ""
-        # read OBD sensors
+        data_dict = None
+        #########
+        # GPS
+        #########
+        if self.gps_conn:
+            data_dict = {}
+            line = ""
+            # Reading lines from serial until GPRMC arrives
+            while line == "":
+                temp_line = str(self.gps_conn.readline())
+                if "$GPRMC" in temp_line:
+                    # found GPRMC line. Recording it.
+                    line = temp_line
+                    GPS_data = self.parse_gps_data(line)
+                    if not data_dict:
+                        data_dict = GPS_data
+        else:
+            print("Unable to connect to gps sensors and read!!")  
+        
+
+        #########
+        # OBD
+        #########
         if (self.obd_conn.is_connected()):
-            for sensor in self.sensors:
+            if not data_dict:
+                data_dict = {}
+            for key in SENSOR_CMDS:
                 # appending results to row
-                try:                 
-                    val = str(conn.query(sensor).value.magnitude)
+                try:
+                    val = str(self.obd_conn.query(SENSOR_CMDS[key]).value.magnitude)
                 except:
                     val = "Error"   
-                data_dict[sensor] = val
+                data_dict[key] = val
         else:
             print("Unable to connect to obd sensors and read!!")  
-        if data_dict : data_dict["TIME"] = time.time()  # from the compute device
-        if (constants.DEBUG): print(data_dict)
+
+        if data_dict :
+            data_dict["TIME"] = time.time()  # from the compute device
+            
+        if (constants.DEBUG): 
+            print(data_dict)
+        
         return data_dict
-       
-       
+    
+    def parse_gps_data(self, GPS_data_line):
+        """
+        Input: line read from GPS serial
+        output: dictionary containing all formatted data points
+
+        Time and data are converted from hhmmss.ss and ddmmyy format to unix timestamp.
+
+        Lat and lon coordinates are converted from degrees 
+        and hemisphere (E - W or N - S) to decimal format 
+        (positive for N and E and negative for S and W)
+
+        Code inspired from script found at:
+        https://github.com/mrichardson23/gps_experimentation/blob/master/gps.py 
+        """
+        line_split = GPS_data_line.split(",")
+
+        GPS_data_point = {
+            'fix_time': line_split[1],
+            'validity': line_split[2],
+            'latitude': line_split[3],
+            'latitude_hemisphere' : line_split[4],
+            'longitude' : line_split[5],
+            'longitude_hemisphere' : line_split[6],
+            'speed': line_split[7],
+            'true_course': line_split[8],
+            'fix_date': line_split[9],
+            'variation': line_split[10],
+            'variation_e_w' : line_split[11],
+            'checksum' : line_split[12]
+        }
+    
+        GPS_data_point['decimal_latitude'] = self.degrees_to_decimal(GPS_data_point['latitude'], GPS_data_point['latitude_hemisphere'])
+        GPS_data_point['decimal_longitude'] = self.degrees_to_decimal(GPS_data_point['longitude'], GPS_data_point['longitude_hemisphere'])
+
+        # TODO: convert time and date from hhmmss.ss and ddmmyy to timestamp
+
+        return GPS_data_point
+
+    def degrees_to_decimal(self, data, hemisphere):
+        """
+        Converts gps output coord from degree to decimal.
+        """
+        try:
+            decimalPointPosition = data.index('.')
+            degrees = float(data[:decimalPointPosition-2])
+            minutes = float(data[decimalPointPosition-2:])/60
+            output = degrees + minutes
+            if hemisphere is 'N' or hemisphere is 'E':
+                return output
+            if hemisphere is 'S' or hemisphere is 'W':
+                return -output
+        except:
+            return ""
+
+    
 
 # add locks for later multithread programming
 class RingBuffer:
