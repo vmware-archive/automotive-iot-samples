@@ -22,7 +22,7 @@ SAMPLING_FREQUENCY = float(config["EDGE"]["SAMPLING_FREQUENCY"])
  
 DATA_FILENAME = config["DEVICE"]["DEVICE_DATA_FILENAME"]
 
-STREAM = "True" == config["EDGE"]["STREAM"]
+STREAM_TO_CLOUD = "True" == config["EDGE"]["STREAM_TO_CLOUD"]
 RECORD = "True" == config["EDGE"]["RECORD"]
 
 EVENTS_FILENAME = config["EDGE"]["EVENTS_FILENAME"]
@@ -41,13 +41,39 @@ SAVE_INTERVAL_LOCAL = float(config["EDGE"]["SAVE_INTERVAL_LOCAL"])
 
 ## auto domain related constants
 
-HARDSTOP_THRESHOLD = 0.5
 HARD_BREAK = "hard_break"
+HARD_ACC = "hard_acc"
 SPEEDING = "speeding"
 NORMAL = "normal"
 SLOW_DOWN = "slow_down"
 MILES = "miles"
 KMs = "kilometers"
 
-INSURANCE_EVENTS = [HARD_BREAK, SPEEDING]
+INSURANCE_EVENTS = [HARD_BREAK, SPEEDING, HARD_ACC]
+
+
+# Domain related
+#http://tracknet.accountsupport.com/wp-content/uploads/Verizon/Hard-Brake-Hard-Acceleration.pdf
+# Light and Medium Duty vehicles: 8.77 MPH/s | 14.11 KPH/s (0.40g)
+# Heavy vehicles: 4.82 MPH/s | 7.76 KPH/s (0.22g)
+# The maximum threshold for hard braking detection is 21.93 MPH/s | 35.29 KPH/s. Events above this threshold will still be
+# captured by the Verizon Telematics 5500, however, regardless of the severity above this level the events will show 21.93
+# | 35.29 as the severity.
+# Hard Acceleration – How it works on 5500 Hardware
+# Verizon Telematics defines a hard acceleration event as a sudden increase in speed greater than a minimum threshold
+# as configured on the 5500 unit, causing excessive force on take-off or acceleration. The minimum thresholds for hard
+# acceleration are:
+# Light and Medium vehicles: 7.90 MPH/s | 12.71 KPH/s (0.36g)
+# Heavy vehicles: 4.82 MPH/s | 7.76 KPH/s (0.22g) 
+LIGHT_MEDIUM_HARD_BREAK = -8.77
+HEAVY_HARD_BREAK = -4.82
+LIGHT_MEDIUM_HARD_ACC = 7.9
+HEAVY_HARD_ACC = 4.82
+
+if HEAVY_VEHICLE :
+    HARD_BREAK = HEAVY_HARD_BREAK
+    HARD_ACC = HEAVY_HARD_ACC
+else:
+    HARD_BREAK = LIGHT_MEDIUM_HARD_BREAK
+    HARD_ACC = LIGHT_MEDIUM_HARD_ACC
 

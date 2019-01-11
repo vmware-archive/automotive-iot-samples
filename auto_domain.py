@@ -15,34 +15,62 @@ def get_speed_limit(gps) :
     #ignore gps for now
     return 50
 
-# TODO 
+
 #https://copradar.com/chapts/references/acceleration.html
 #http://tracknet.accountsupport.com/wp-content/uploads/Verizon/Hard-Brake-Hard-Acceleration.pdf
-def is_hard_break(edge):
-    return False
+## My lack of knowledge, does the drop happen over a second or over milliseconds?
+## should one take the min time and max time across the buffer and the min speed and max speed? 
+def check_for_events_of_interest(data_buffer):
     
+    max_speed = -1
+    min_speed = 1000000
+    max_speed_datum = None
+    min_speed_datum = None
 
-def is_speeding(speed, gps):  
+    for i in range(0, data_buffer.capacity()):
+        curr = data_buffer[i]
+        if curr:
+            curr_speed = curr[OBD]["SPEED"]
+            if (curr_speed > max_speed):
+                max_speed_datum = curr
+                max_speed = curr_speed
+            if (curr_speed < min_speed):
+                min_speed = curr_speed
+                min_speed_datum = curr
+
+    # time order data
+    if max_speed_datum:
+        if (max_speed_datum["TIME"] > min_speed_datum["TIME"]):
+            begin = min_speed_datum
+            end = max_speed_datum
+        else :
+            begin = max_speed_datum
+            end = min_speed_datum
+     
+        # time in milliseconds
+        time_interval = end["TIME"] - begin["TIME"]
+        speed_change = end["OBD"]["SPEED"] - begin["OBD"]["SPEED"]
+
+        # to obtain acceleration/deceleration in  miles/hour/second
+        speed_rate_of_change = (speed_change/time_interval) * 1000
+        if (speed_rate_of_change > HEAVY_HARD_ACC):
+            return constants.HARD_ACC
+        elif (speed_ratechange < HEAVY_BREAK):
+            return constants.HARD_BREAK
+        elif speeding(max_speed, max_speed_datum["GPS"]):
+            return constants.SPEEDING
+    #default
+    return constants.NORMAL
+
+
+
+def speeding(speed, gps):  
     """
     Returns true if current speed is above speed limit at given GPS coordinates
     """
     
     return (speed > get_speed_limit(gps)) 
 
-
-# TODO -- to actually do something intelligent with the data
-# does python have an enumneration type?
-def get_event_type(drive, data_dict):
-    event_type = constants.NORMAL
-    speed = int(data_dict["SPEED"])
-    gps = data_dict.setdefault("GPS", constants.DEFAULT_GPS)
-    if (speed < 0):
-        event_type = constants.HARD_BREAK
-    elif (speed < 5):
-        event_type = constants.SLOW_DOWN
-    elif (speed > 50):
-        event_type = constants.SPEEDING
-    return event_type
 
 
 

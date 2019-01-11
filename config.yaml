@@ -48,7 +48,7 @@ DISTANCE_TRAVELED_FILENAME: data/distance_traveled.txt
 DISTANCE_TRAVELED_FILENAME_BACKUP: data/distance_traveled.txt.bak
 
 # Stream events to Cloud Endpoints
-STREAM: False
+STREAM_TO_CLOUD: False
 # Record sensor data to file or other persistent store
 RECORD: True
 
