@@ -10,21 +10,21 @@ import time
 
 
 def process_stream_data(drive, data_dict):
-    speed = int(data_dict["SPEED"])
-    drive.data_buffer.add_element(speed)
-    drive.update_distance(speed)
-    # periodically persist the distance traveled, so as not to lose all the data should the device reboot/power-off
-    if drive.save_time():
-        auto_domain.log_distance(drive.total_distance_unit)
-
-    event_type = auto_domain.get_event_type(drive, data_dict)
+    print("enter process_stream_data")
+    drive.data_buffer.add(data_dict)
+    drive.update_distance(data_dict["OBD"]["SPEED"])
+    drive.inc_samples()
+    if drive.analysis_time():
+        drive_event = auto_domain.check_for_events_of_interest(drive.data_buffer)
     if not (event_type == constants.NORMAL):
         data_dict["EVENT_TYPE"] = event_type  # data_dict enhanced with event_type 
         auto_domain.log_auto_event(event_type, data_dict)  
         drive.update_events(data_dict)
-        if constants.STREAM:
+        if constants.STREAM_TO_CLOUD:
             report_event(data_dict, drive.autoID)
-    
+    # periodically persist distance traveled to local filesystem 
+    if drive.save_time():
+        auto_domain.log_distance(drive.total_distance_unit)
 
 # Read the pre-recorded data and process each item as if live-streamed
 # thus the call to process_stream_data

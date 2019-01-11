@@ -121,36 +121,26 @@ class Automobile():
 # add locks for later multithread programming
 class RingBuffer:
     capacity = 0
-    curr = 0
+    curr = -1
     data = []
 
     def __init__(self, capacity) :
         self.capacity = capacity
+        self.curr = -1
+        for i in range(0, capacity):
+            self.data.append(None)
 
-
-    def add_element(self, datum) :
-        next_ele = (self.curr + 1)
-        if (next_ele < self.capacity):
-            self.data.append(datum)
-        else:
-            next_ele = next_ele % self.capacity
-            self.data[next_ele] = datum
-        self.curr = next_ele
-
-    def accelerations(self):
-        accelerations = []
-        val = self.data[self.curr]
-        for i in range(1, self.capacity): 
-            next = (self.curr - i) % self.capacity
-            next_val = self.data[next]
-            accelerations.append(val - next_val)
-            val = next_val
-        return accelerations
+    def add(self, datum) :   
+        next = (self.curr + 1) % self.capacity
+        self.data[next] = datum
+        self.curr = next
+ 
 
 
 class Drive():
     # is an object that captures details such as driver name, id, vehicle model and id
     autoID = None
+    analysis_window = constants.HISTORY
     # ringbuffer of fixed capacity
     data_buffer = None
     # float, represents how frequently the sensors are polled
@@ -161,18 +151,27 @@ class Drive():
     # last time the distance traveled information was saved to some persistence store
     last_save_time = 0
     # peridically save the data locally to protect from connectivity issues, crashes, power-off
-    save_interval= -1
-
+    save_interval= -1 
+    
+    sample = 0
     speedings = []
     hard_breaks = []
     slow_downs = []
     
-    def __init__(self, autoID, time_unit, ring_buffer_size, save_interval): 
+    def __init__(self, autoID, time_unit, data_buffer_size, save_interval): 
         self.autoID = autoID
-        self.time_unit = time_unit  
-        self.data_buffer = RingBuffer(ring_buffer_size) 
+        self.data_buffer_size = data_buffer_size
+        self.analysis_window_size = data_buffer_size % 2
+        self.data_buffer = RingBuffer(data_buffer_size) 
         self.save_interval = save_interval
         self.last_save_time = time.time()
+
+    def analysis_time(self):
+        return ((self.sample % self.analysis_window_size) == 0)
+
+    
+    def inc_samples(self):
+        self.sample = (self.sample + 1) % constants.MAX_READINGS # prevents overflow
 
     # a helper method to determine based on configured parameters whether to persist data locally
     def save_time(self):
