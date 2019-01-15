@@ -9,6 +9,7 @@ DRIVER_NAME: Alex Courouble
 DRIVER_ID: AC007
 VEHICLE_MODEL: BMW
 VEHICLE_ID: BMW1234
+HEAVY_VEHICLE: False
 
 # Pre-recorded device data
 DEVICE_DATA_FILENAME: data/car_data.csv
