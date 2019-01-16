@@ -12,19 +12,23 @@ import datetime
 def process_stream_data(drive, data_dict):
     print("enter process_stream_data")
     drive.data_buffer.add(data_dict)
-    drive.update_distance(data_dict["OBD"]["SPEED"])
+    if "SPEED" in data_dict:
+        drive.update_distance(data_dict["SPEED"])
+    elif "speed" in data_dict:
+        drive.update_distance(data_dict["speed"])
     drive.inc_samples()
+
     if drive.analysis_time():
         drive_event = auto_domain.check_for_events_of_interest(drive.data_buffer)
-    if not (event_type == constants.NORMAL):
-        data_dict["EVENT_TYPE"] = event_type  # data_dict enhanced with event_type 
-        auto_domain.log_auto_event(event_type, data_dict)  
-        drive.update_events(data_dict)
-        if constants.STREAM_TO_CLOUD:
-            report_event(data_dict, drive.autoID)
+        if not (drive_event == constants.NORMAL):
+            data_dict["EVENT_TYPE"] = drive_event  # data_dict enhanced with event_type 
+            auto_domain.log_auto_event(drive_event, data_dict)  
+            drive.update_events(data_dict)
+            if constants.STREAM_TO_CLOUD:
+                report_event(data_dict, drive.autoID)
     # periodically persist distance traveled to local filesystem 
     if drive.save_time():
-        auto_domain.log_distance(drive.total_distance_unit)
+        auto_domain.log_distance(drive.total_distance_units)
 
 # Read the pre-recorded data and process each item as if live-streamed
 # thus the call to process_stream_data
@@ -100,26 +104,29 @@ def process_live_data():
     # Printing headers to file (Depending on data points defined in config file)
     metric_list = None
     output_file_name = None
-    if constants.RECORD:
-        metric_list = automobile.get_tracked_metrics()
+    if len(automobile.sensors_connections) > 0:
+        if constants.RECORD:
+            metric_list = automobile.get_tracked_metrics()
 
-        now = datetime.datetime.now()
-        output_file_name = "data/drive_" + now.strftime("%A_%d_%B_%Y_%I_%M%p") + ".csv"
-        print("Writting data to :" + output_file_name)
-        record_metrics_header(metric_list, output_file_name)
+            now = datetime.datetime.now()
+            output_file_name = "data/drive_" + now.strftime("%A_%d_%B_%Y_%I_%M%p") + ".csv"
+            print("Writting data to :" + output_file_name)
+            record_metrics_header(metric_list, output_file_name)
 
-    while True:
-        # reads the data from the various sensors
-        data_dict = automobile.read_sensors()
+        while True:
+            # reads the data from the various sensors
+            data_dict = automobile.read_sensors()
 
-        # if data_dict:
-            # process_stream_data(drive, data_dict)
-        
-        # TODO: print data to file if recorded. Make sure all data is in and all
-        if constants.RECORD and metric_list:
-            record_sensor_readings(data_dict,metric_list, output_file_name)
+            if data_dict:
+                process_stream_data(drive, data_dict)
+            
+            # TODO: print data to file if recorded. Make sure all data is in and all
+            if constants.RECORD and metric_list:
+                record_sensor_readings(data_dict,metric_list, output_file_name)
 
-        time.sleep(constants.SAMPLING_FREQUENCY)
+            time.sleep(constants.SAMPLING_FREQUENCY)
+    else:
+        print("No sensor connected. Please make sure sensors are connected. \n Bye!")
 
 def main():
     if constants.LIVE:

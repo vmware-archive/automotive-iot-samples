@@ -84,6 +84,7 @@ class Automobile():
     obd_conn = None
     gps_conn = None
     sensors = []
+    sensors_connections = []
     metrics = {}
 
     def __init__(self, autoID, sensors):
@@ -94,6 +95,8 @@ class Automobile():
         if "OBD" in self.sensors:
             try :
                 self.obd_conn = obd.OBD()
+                if self.obd_conn.status() != "Not Connected":
+                    self.sensors_connections.append(self.obd_conn)
             except:
                 print("Unexpected error: unable to connect to OBD", sys.exc_info()[0])
                 self.obd_conn = None
@@ -103,11 +106,13 @@ class Automobile():
                 try :
                     print("Trying top connect to GPS on serial /dev/ttyUSB" + str(i))
                     self.gps_conn = serial.Serial("/dev/ttyUSB" + str(i), constants.GPS_BAUD_RATE, timeout=constants.SAMPLING_FREQUENCY)
+                    self.sensors_connections.append(self.gps_conn)
                     print("Connected to serial /dev/ttyUSB" + str(i))
                     break
                 except:
                     print("Unexpected error: unable to GPS", sys.exc_info()[0])
                     self.gps_conn = None
+        
 
     def get_tracked_metrics(self):
         """
@@ -282,6 +287,8 @@ class Drive():
         self.last_save_time = time.time()
 
     def analysis_time(self):
+        if self.analysis_window_size == 0:
+            return False
         return ((self.sample % self.analysis_window_size) == 0)
 
     
@@ -301,7 +308,7 @@ class Drive():
 
     # for efficiency will deal with the time multiplier when consuming this value elsewhere
     def update_distance(self,ispeed):
-        self.total_distance_units += ispeed
+        self.total_distance_units += float(ispeed)
 
     def update_events(self, event_dict):
         event_type = event_dict["EVENT_TYPE"]
