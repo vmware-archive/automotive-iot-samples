@@ -39,7 +39,7 @@ def write_event(json_data):
         json_data["gps_coord"]
         ]
 
-    db.execute("""INSERT OR REPLACE INTO events VALUES(?,?,?,?,?)""",row_to_insert)
+    db.execute("""INSERT OR REPLACE INTO events VALUES(?,?,?)""",row_to_insert)
     db.commit()
 
 def read_last_event():
