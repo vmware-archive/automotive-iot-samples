@@ -10,7 +10,7 @@
     "react-table": "^6.8.6"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=4002 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
