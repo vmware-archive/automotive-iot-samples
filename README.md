@@ -42,6 +42,12 @@ If you have docker and docker-compose installed on your machine, the following c
 docker-compose up -d
 ```
 
+To stop all services:
+
+```
+docker-compose down
+```
+
 After all services are started, you can start populating each service's database with test data with a simple curl command. For example, to add a driving event to the each usecase, use the commands bellow.
 
 ### Insurance
