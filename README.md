@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repository contains the cloud endpoints for the Automotive IoT Sample. With this sample, we show case three different possible usecases for an automotive IoT application. The usecases are listed bellow:
+This repository contains the cloud endpoints for the Automotive IoT Sample. With this sample, we show case three different possible use cases for an automotive IoT application. 
 
 **Three Usecases:**
 
@@ -18,7 +18,7 @@ This repository contains the cloud endpoints for the Automotive IoT Sample. With
 
     A hypothetical smart city that wants to track anonimous driving data to understand the state of its roads and congetions.
 
-The purpose of these endpoints is to collect and display data collected by the edge application running an a raspberry PI. Each usecase in this directory contains three different parts.
+The purpose of these endpoints is to collect and display "significant" data collected by the edge application running an a raspberry PI. Each use case in this directory contains three different parts.
 
 - `edge_endpoint`
 
@@ -32,7 +32,7 @@ The purpose of these endpoints is to collect and display data collected by the e
 
 - `ui_endpoint`
 
-    Contains the API that serves the events stored in the SQLite3 database to the frontend.
+    Contains the API that serves the events stored in the SQLite3 database to the front end. Note these can be varied from those used to post the data of interest from the edge devices. For instance, in the Smart City API one might want to view the time period where the most slow-downs happen in a day, or where the maximum speedings occur to introduce a speed bump.
 
 ## How to run
 
@@ -48,7 +48,7 @@ To stop all services:
 docker-compose down
 ```
 
-After all services are started, you can start populating each service's database with test data with a simple curl command. For example, to add a driving event to the each usecase, use the commands bellow.
+After all the services are started, you can start populating each service's database with test data with a simple curl command. For example, to add a driving event to the each use case, use the commands bellow.
 
 ### Insurance
 
@@ -69,11 +69,11 @@ View the dashboard at `localhost:4001`.
 ### Smart City
 
 ```
-curl -d '{"event_type": "SPEEDING", "event_timestamp": 1541181513, "gps_coord": "37.7992520359445,-122.41955459117891"}' -H "Content-Type: application/json" -X POST http://localhost:2002/add_event
+curl -d '{"event_type": "SPEEDING", "event_timestamp": 1541181513, "gps_coord": "37.7992520359445,-122.41955459117891"} -H "Content-Type: application/json" -X POST http://localhost:2002/add_event
 ```
 
-Note that the smart city API does not accept `client_side_id` and `user` since the smart city uses anonimized data.
+Note that the smart city API does not accept `client_side_id` and `user` since the smart city uses anonymized data.
 
 View the dashboard at `localhost:4002`.
 
-Instruction to run the different services in development mode is in each service's directory.
+Instructions to run the different services in development mode are in each service's directory.
