@@ -69,7 +69,7 @@ View the dashboard at `localhost:4001`.
 ### Smart City
 
 ```
-curl -d '{"event_type": "SPEEDING", "event_timestamp": 1541181513, "gps_coord": "37.7992520359445,-122.41955459117891"} -H "Content-Type: application/json" -X POST http://localhost:2002/add_event
+curl -d '{"event_type": "SPEEDING", "event_timestamp": 1541181513, "gps_coord": "37.7992520359445,-122.41955459117891"}' -H "Content-Type: application/json" -X POST http://localhost:2002/add_event
 ```
 
 Note that the smart city API does not accept `client_side_id` and `user` since the smart city uses anonymized data.
