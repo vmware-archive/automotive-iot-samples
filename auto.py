@@ -9,7 +9,6 @@ import sys
 DEBUG = config["COMMON"]["DEBUG"]
 
 SENSOR_CMDS = { 
-    "TIME" : "skip",
     "SPEED" : obd.commands.SPEED,
     "RPM" : obd.commands.RPM,
     "FUEL_LEVEL" : obd.commands.FUEL_LEVEL,
@@ -123,6 +122,7 @@ class Automobile():
 
         if self.gps_conn:
             metric_list += GPS_METRICS
+        metric_list.append("TIME")
         if self.obd_conn:
             metric_list += SENSOR_CMDS.keys()
 
