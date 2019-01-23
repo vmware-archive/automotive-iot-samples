@@ -1,0 +1,73 @@
+version: "3.3"
+
+services:
+
+  ####################################
+  # Insurance services
+  ####################################
+  insurance_edge_api:
+    build: ./insurance/edge_endpoint/
+    ports: 
+      - "2000:2000"
+    volumes: 
+      - ./insurance/data:/data
+  
+  insurance_api:
+    build: ./insurance/ui_endpoint/
+    ports: 
+      - "3000:3000"
+    volumes: 
+      - ./insurance/data:/data
+
+  insurance_ui:
+    build: ./insurance/react-ui/
+    ports: 
+      - "4000:4000"
+
+  ####################################
+  # My Driving services
+  ####################################
+  my_driving_edge_api:
+    build: ./my_driving/edge_endpoint/
+    ports: 
+      - "2001:2001"
+    volumes: 
+      - ./my_driving/data:/data
+  
+  my_driving_api:
+    build: ./my_driving/ui_endpoint/
+    ports: 
+      - "3001:3001"
+    volumes: 
+      - ./my_driving/data:/data
+
+  my_driving_ui:
+    build: ./my_driving/react-ui/
+    ports: 
+      - "4001:4001"
+
+  ####################################
+  # smart city services
+  ####################################
+  smart_city_edge_api:
+    build: ./smart_city/edge_endpoint/
+    ports: 
+      - "2002:2002"
+    volumes: 
+      - ./smart_city/data:/data
+  
+  smart_city_api:
+    build: ./smart_city/ui_endpoint/
+    ports: 
+      - "3002:3002"
+    volumes: 
+      - ./smart_city/data:/data
+
+  smart_city_ui:
+    build: ./smart_city/react-ui/
+    ports: 
+      - "4002:4002"
+# TODO:
+# dockerignore in each folder. 
+# change port within the apps
+# finish smart city dockerfiles
