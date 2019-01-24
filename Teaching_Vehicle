@@ -10,6 +10,9 @@ a) Add test cases for the edge
 b) Add test cases for the various cloud endpoints
 c) Note how we used "live" and "recorded" to replay data for development purposes for domain related edge code?
    The OBD sensor can collect interesting data only when the car is running. The GPS sensor does not work well indoors.
+d) We could certainly use more unit tests
+e) Have not handled the case of a system crash and uploading when not driving whatever drive event data was
+   collected. It is to handle such a scenario that drive_save.txt and the event files have been created.
 
 1) Security
 ============
@@ -74,7 +77,10 @@ e) Display on an administrator dashboard the various devices registered and at w
 f) Scale handling at the server end.
 g) Might you want to port the application to Android or iOS/iphone?
 
-
+5) More data
+============
+a) Please feel to upload data from your drives, in particular the GPS+OBD data.
+   We can have our own open data sets!
 
 BE CAREFUL. HAVE FUN!
 
