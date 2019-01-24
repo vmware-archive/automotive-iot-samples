@@ -45,8 +45,8 @@ MAX_READINGS: 180000
 EVENTS_FILENAME: data/events.csv
 EVENTS_FILENAME_BACKUP: data/events.csv.bak
 
-DRIVE_SAVE_FILENAME: data/distance_traveled.txt
-DRIVE_SAVE_FILENAME_BACKUP: data/distance_traveled.txt.bak
+DRIVE_SAVE_FILENAME: data/drive_save.txt
+DRIVE_SAVE_FILENAME_BACKUP: data/drive_save.txt.bak
 
 # Stream events to Cloud Endpoints
 STREAM_TO_CLOUD: False
