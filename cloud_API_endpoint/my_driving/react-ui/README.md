@@ -4,12 +4,16 @@ The directory contains the ReactJS frontend that displays the drive events in a 
 
 To run in development mode, follow the instructions bellow.
 
+
 1. Start and install dependencies:
 
     ```
-    yarn
+    brew install yarn
     ```
-
+   alternately
+   ```
+    npm install yarn
+   ```
 2. Start development server:
 
     ```
