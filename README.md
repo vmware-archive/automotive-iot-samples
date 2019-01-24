@@ -4,7 +4,7 @@
 
 ## Overview
 
-This repository contains a sample autmotive edge-based IoT application. The application is split in 2 parts, in each subdirectory. `car_edge/` contains the code that will live on the Raspberry PI, in the car. This Raspberry Pi has to be connected to a GPS sensor and an ODB sensor in order to collect the data. `cloud_API_endpoint/` contains the different endpoints running in the cloud. More information on each part can be found in each subdirectory.
+This repository contains a sample autmotive edge-based IoT application. The application is comprised of the "edge" and "cloud or data center" parts and organized accordingly in two top level sub-directories.  `car_edge/` contains the code that will live on the Raspberry PI, in the car. Note, you could try it out on your laptop or any other device that has bluetooth, but for our purposes here we shall assume it is a Raspberry PI. This Raspberry Pi has to be connected to a GPS sensor and an ODB sensor in order to collect the data. `cloud_API_endpoint/` contains the different endpoints running in the cloud. More information on each part can be found in their respective subdirectories.
 
 ## Try it out
 
