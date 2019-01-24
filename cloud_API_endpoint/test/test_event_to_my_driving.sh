@@ -1,0 +1,1 @@
+curl -d '{"client_side_id": "abcd1234566", "user": "someone", "event_timestamp": 1541181513, "distance": "50", "fuel": "5"}' -H "Content-Type: application/json" -X POST http://localhost:2001/add_event
