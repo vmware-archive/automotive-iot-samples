@@ -33,7 +33,7 @@ DISTANCE_UNITS_LABEL: miles
 GPS_SERIAL: /dev/ttyUSB0
 DEFAULT_GPS: 37.7992520359445,-122.41955459117891
 
-LIVE: True
+LIVE: False
 
 [EDGE]
 # how frequency we read from the obd sensors
@@ -45,8 +45,8 @@ MAX_READINGS: 180000
 EVENTS_FILENAME: data/events.csv
 EVENTS_FILENAME_BACKUP: data/events.csv.bak
 
-DISTANCE_TRAVELED_FILENAME: data/distance_traveled.txt
-DISTANCE_TRAVELED_FILENAME_BACKUP: data/distance_traveled.txt.bak
+DRIVE_SAVE_FILENAME: data/distance_traveled.txt
+DRIVE_SAVE_FILENAME_BACKUP: data/distance_traveled.txt.bak
 
 # Stream events to Cloud Endpoints
 STREAM_TO_CLOUD: False

@@ -13,10 +13,14 @@ def process_stream_data(drive, data_dict):
     print("enter process_stream_data")
     drive.data_buffer.add(data_dict)
     if "SPEED" in data_dict:
+        # from OBD sensor
         drive.update_distance(data_dict["SPEED"])
     elif "speed" in data_dict:
+        # from GPS
         drive.update_distance(data_dict["speed"])
     drive.inc_samples()
+    if ((drive.begin_fuel_level < 0) and ("FUEL_LEVEL" in data_dict)):
+        drive.begin_fuel_level = float(data_dict["FUEL_LEVEL"])
 
     if drive.analysis_time():
         drive_event = auto_domain.check_for_events_of_interest(drive.data_buffer)
@@ -28,7 +32,7 @@ def process_stream_data(drive, data_dict):
                 report_event(data_dict, drive.autoID)
     # periodically persist distance traveled to local filesystem 
     if drive.save_time():
-        auto_domain.log_distance(drive.total_distance_units)
+        auto_domain.save(drive)
 
 # Read the pre-recorded data and process each item as if live-streamed
 # thus the call to process_stream_data

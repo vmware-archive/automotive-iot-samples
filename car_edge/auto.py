@@ -272,7 +272,10 @@ class Drive():
     last_save_time = 0
     # peridically save the data locally to protect from connectivity issues, crashes, power-off
     save_interval= -1 
-    
+    # a fuel level is a float .. units could be gallons or litres, should be configurable
+    begin_fuel_level = -1.0
+    end_fuel_level = -1.0
+
     sample = 0
     speedings = []
     hard_breaks = []

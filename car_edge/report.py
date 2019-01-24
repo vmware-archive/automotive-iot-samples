@@ -65,27 +65,26 @@ def smart_city_event_data(event_dict):
             "gps_coord": event_dict["GPS"]
             }
 
-def my_driving_event_data(date, distance, speedings, hard_breaks, places, autoID):
+def my_driving_event_data(drive):
     """
-    Assembles My_Driving event relevant event data  
+    Assembles My_Driving relevant  data  
     params:
     date, distance, number of speedings, number of hard breaks, places visited, 
     and AutoID object (contains driver and vehicle information)
     returns:
     a dictionary containing My_Driving relevant information.
+    Other things one might report out are number of hard_breaks, hard_accelerations, speeding, slow_downs 
+    including where and when each occured. 
+    Might also want to report starting and ending location names or just their GPS co-ordinates.          
     """
-    return {
-        "date": date,
-        "client_side_id": autoID.driverID,
-        "user": autoID.driverName, 
-        "vehicle_model": autoID.vehicle_model,
-        "vehicleID": autoID.vehicleID,
-        "distance": distance,
-        "speedings" : len(speedings), # perhaps we want the time and gps co-ordinates
-        "hard_breaks": len(hard_breaks) ,# perhaps we want the time and gps co-ordinates
-        "places": ",".join(places)
-        }
-
+    return {"client_side_id": drive.autoID.driverID,
+            "user": drive.autoID.driverName,
+            # time at the end of the drive
+            "event_timestamp": time.time(),
+            "distance": auto_domain.get_actual_distance_traveled(drive.distance),
+            "fuel": (drive.end_fuel_level - drive.begin_fuel_level)
+            }
+    
 
 def report_insurance_event(event_dict, autoID) :
     """
@@ -122,8 +121,8 @@ def report_smart_city_event(event_dict):
         print(response.status_code)
 
 
-def report_my_drive_event(date, distance, speedings, hard_breaks, places, autoID):
-    data = my_driving_event_data(date, distance, speedings, hard_breaks, places, autoID)
+def report_my_drive_event(drive):
+    data = my_driving_event_data(drive)
     data_json = json.dumps(data)
     headers = {'Content-type': 'application/json'}
     url = MY_DRIVING_URL + "add_event"
@@ -164,7 +163,7 @@ def report_all_events():
                 drive.update_events(event_dict)
                       
     if constants.MY_DRIVING_ENABLED:
-        report_my_drive_event(datetime.date.today(), distance, len(drive.speedings), len(drive.hard_breaks), places, autoID)
+        report_my_drive_event(drive)
 
 
 def test():
