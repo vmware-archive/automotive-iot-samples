@@ -36,17 +36,17 @@ class Table extends Component {
         accessor: "user" // String-based value accessors!
       },
       {
-        Header: "Type",
-        accessor: "event_type"
-      },
-      {
         Header: "Time",
         accessor: "event_timestamp",
         Cell: props => <span>{this.convertDate(props.value)}</span> // Custom cell components!
       },
       {
-        Header: "Location",
-        accessor: "gps_coord"
+        Header: "Distance",
+        accessor: "distance"
+      },
+      {
+        Header: "Fuel",
+        accessor: "fuel"
       }
     ];
     return (

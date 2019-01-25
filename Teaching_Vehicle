@@ -1,0 +1,93 @@
+Hello Professors and Students!
+
+This sample Automotive IoT Application can be extended to teach various concepts.
+While we used a Raspberry Pi at the edge, to reinforce that the edge may have limited resources, Students could 
+just as easily use a linux laptop.
+
+0) Testing
+===========
+a) Add test cases for the edge
+b) Add test cases for the various cloud endpoints
+c) Note how we used "live" and "recorded" to replay data for development purposes for domain related edge code?
+   The OBD sensor can collect interesting data only when the car is running. The GPS sensor does not work well indoors.
+d) We could certainly use more unit tests
+e) Have not handled the case of a system crash and uploading when not driving whatever drive event data was
+   collected. It is to handle such a scenario that drive_save.txt and the event files have been created.
+
+1) Security
+============
+a) Setting up HTTPS and certificates, server and possibly client to ensure encrypted communications between the Car-Edge and theCloud.
+b) What is a denial of service (DoS) attack and protecting from it?
+   The use of API tokens to ensure that willy nilly no one can flood the cloud endpoint.
+   While the Edge has to be provisioned the token, the cloud endpoints must maintain a record of valid tokens and check for them.
+   It is then possible for them to revoke tokens. For additional security, a combination of token and user-id could be
+   verified for the user tracking cloud endpoints.
+c) Protecting from DoS while protecting user identity.
+   How does one not use a token as in the example above, which might serve as a proxy for user-id, for the smart city 
+   application where we just want to track which that vehicles are in an area and their speed, 
+   but not explictly which vehicle and its owner?
+d) What is a firewall and using that to protect the cloud endpoints.
+e) Learn about bluetooth security and the need to set up a trusted connection/pairing.
+f) Validate input data -  to not overwhelm the database at the cloud end.
+   Such as strings, integers, length of strings etc. 
+g) Check for SQL injection.
+h) Reducing Attack Surface. Compare the My Driver application and Smart City and Insurance. Are there methods that are
+   extraneous and unused in any of them?
+i) Software vulnerabilities. They should notice a Node.js buffer related deprecation warning during build.
+   Is there a new library that they can use? Is there an alternate API call they must use in their code?
+   https://nodesource.com/blog/understanding-the-buffer-deprecation-in-node-js-10/
+j) All three sample applications only "sensed", they did not command the engine in anyway. Disallowing any such actuation commands.
+
+
+2) User Interface
+==================
+a) Customizing look and feel with style sheets
+b) Javascript to check for data validity 
+c) Using templates, and variables such as "brand" and set the value of the same in a configuration file, 
+   header and footer inclusions.
+d) Graph in real time (busy city points) or when desired collected data at the cloud endpoints. Grafana?
+
+
+3) Automobile Domain
+====================
+a) Onboard Diagnosistic Sensors were introduced back in the 1980s and have evolved to 
+   include more metrics and even extensions. Cars by different manufacturers and different model years
+   will provide different sets of metrics beyond some core metrics. 
+   Modify code to check during the initialization phase to check which commands a certain car supports
+   and keep a list of only the valid ones. In the periodic sense loop only "sense" the valid ones.
+b) Save speed limits along frequently used routes to give the user more context sensitive speed limit information.
+c) Introduce feedback to users.
+d) If airbags are deployed force out a notification to an emergency cloud endpoint with GPS co-ordinates, time, 
+   and any other valuable information. Stalled on the side of a highway might also be worthy of notification.
+   This might be a selective use of the driver's wifi hotspot from phone or some other technique.
+e) How often should one sample OBD and GPS data to be sufficiently accurate?
+f) How large should be data analysis window be?
+g) How might you want to extend the applications? Insurance might also be interested in total drive time.
+   Your parents might want to track how well you drive while learning.
+h) Keep track of car's fuel efficiency, and other information? Send you a reminder to take vehicle for servicing.
+
+4) Other 
+=================
+a) Registration of vehicles -- Define a workflow and implement
+b) Using container technologies
+c) How might you use  Read-only volumes for cloud endpoint and registration related information so the end user cannot tamper with the applications
+   on the Edge?
+d) How might you alter the code to periodically check for software updates at the edge and install?
+e) Display on an administrator dashboard the various devices registered and at what software version they are running?
+f) Scale handling at the server end.
+g) Might you want to port the application to Android or iOS/iphone?
+
+5) More data
+============
+a) Please feel to upload data from your drives, in particular the GPS+OBD data.
+   We can have our own open data sets!
+
+BE CAREFUL. HAVE FUN!
+
+
+
+
+
+
+   
+    

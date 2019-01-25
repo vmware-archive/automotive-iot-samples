@@ -61,7 +61,8 @@ With test data in the database, you should be able to view the data in the insur
 ### My Driving
 
 ```
-curl -d '{"client_side_id": "abcd1234566", "user": "someone", "event_type": "SPEEDING", "event_timestamp": 1541181513, "gps_coord": "37.7992520359445,-122.41955459117891"}' -H "Content-Type: application/json" -X POST http://localhost:2001/add_event
+curl -d '{"client_side_id": "abcd1234566", "user": "someone", "event_timestamp": 1541181513, "distance": "50", "fuel": "5"}' -H "Content-Type: application/json" -X POST http://localhost:2001/add_event
+
 ```
 
 View the dashboard at `localhost:4001`.

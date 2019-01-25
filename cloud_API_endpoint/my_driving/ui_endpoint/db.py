@@ -25,34 +25,8 @@ def initialize_DB(db):
     1-A key generated on the edge gateway when an event detected.
     2-The sqlite3 rowid: http://www.sqlitetutorial.net/sqlite-autoincrement/
     """
-    db.execute( """CREATE TABLE IF NOT EXISTS events (client_side_id TEXT, user TEXT, event_type TEXT, event_timestamp INTEGER, gps_coord TEXT);""")
+    db.execute( """CREATE TABLE IF NOT EXISTS events (client_side_id TEXT, user TEXT, event_timestamp INTEGER, distance TEXT, fuel TEXT);""")
 
-def write_event(json_data):
-    """
-    Inserts data passed in argument.
-    """
-    db = get_db()
-
-    row_to_insert = [
-        json_data["client_side_id"],
-        json_data["user"],
-        json_data["event_type"],
-        int(json_data["event_timestamp"]),
-        json_data["gps_coord"]
-        ]
-
-    db.execute("""INSERT OR REPLACE INTO events VALUES(?,?,?,?,?)""",row_to_insert)
-    db.commit()
-
-def read_last_event():
-    """
-    Reads last event from DB.
-    """
-    db = get_db()
-
-    row = db.execute("""SELECT client_side_id, user, event_type, max(event_timestamp), gps_coord FROM events""").fetchall()
-
-    return row
 
 def read_events():
     """
@@ -62,6 +36,6 @@ def read_events():
 
     # Returning all events from DB
     # TODO: pagination
-    rows = db.execute("""SELECT client_side_id, user, event_type, event_timestamp, gps_coord FROM events""").fetchall()
+    rows = db.execute("""SELECT client_side_id, user, event_timestamp, distance, fuel FROM events""").fetchall()
 
     return rows
