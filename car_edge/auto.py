@@ -154,8 +154,6 @@ class Automobile():
                     GPS_data = self.parse_gps_data(line)
                     if not data_dict:
                         data_dict = GPS_data
-        else:
-            print("Unable to connect to gps sensors and read!!")  
         
 
         #########
@@ -171,8 +169,6 @@ class Automobile():
                 except:
                     val = "Error"   
                 data_dict[key] = val
-        else:
-            print("Unable to connect to obd sensors and read!!")  
 
         if data_dict :
             data_dict["TIME"] = time.time()  # from the compute device
