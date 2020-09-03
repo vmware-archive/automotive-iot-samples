@@ -8,7 +8,7 @@
     "react-dom": "^16.6.3",
     "react-scripts": "2.1.1",
     "react-table": "^6.8.6",
-    "serve": "^10.1.1"
+    "serve": "^10.1.2"
   },
   "scripts": {
     "start": "PORT=4000 react-scripts start",
